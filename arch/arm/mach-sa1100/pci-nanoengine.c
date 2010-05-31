@@ -168,6 +168,18 @@ static int __init pci_nanoengine_setup_resources(struct pci_sys_data *sys)
 int __init pci_nanoengine_setup(int nr, struct pci_sys_data *sys)
 {
 	int ret = 0;
+#if 0
+	/* To access the PCI configuration space directly. */
+	unsigned char  *pcicfg_b =
+		(unsigned char  *)NANO_PCI_CONFIG_SPACE_VIRT;
+	unsigned short *pcicfg_s =
+		(unsigned short *)NANO_PCI_CONFIG_SPACE_VIRT;
+	unsigned long  *pcicfg_l =
+		(unsigned long  *)NANO_PCI_CONFIG_SPACE_VIRT;
+	/* To access the 6 bytes of MAC address in flash memory. */
+	unsigned char *const flash = (unsigned char *)SA1100_CS0_PHYS;
+	unsigned char *const mac_address = flash + 0x3FFA;
+#endif
 
 	pcibios_min_io = 0;
 	pcibios_min_mem = 0;
@@ -182,6 +194,18 @@ int __init pci_nanoengine_setup(int nr, struct pci_sys_data *sys)
 		GPDR = (GPDR & ~GPIO_MBREQ) | GPIO_MBGNT;
 		GAFR |= GPIO_MBGNT | GPIO_MBREQ;
 		TUCR |= TUCR_MBGPIO;
+#if 0
+		PGSR &= ~GPIO_MBGNT;
+		GPCR = GPIO_MBGNT;
+		GPDR = (GPDR & ~GPIO_MBREQ) | GPIO_MBGNT;
+
+		GAFR |= (GPIO_MBGNT | GPIO_MBREQ);
+		TUCR |= TUCR_MR;
+#endif
+#if 0
+		GPDR &= ~GPIO_GPIO0;
+		set_irq_type(GPIO_GPIO0, IRQ_TYPE_EDGE_BOTH);
+#endif
 	}
 
 	return ret;
